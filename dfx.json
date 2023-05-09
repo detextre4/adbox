@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "canisters": {
+    "rap_battle_backend": {
+      "type": "motoko",
+      "main": "src/rap_battle_backend/main.mo"
+    },
+    "rap_battle_frontend": {
+      "type": "assets",
+      "source": [
+        "src/rap_battle_frontend/assets"
+      ],
+      "dependencies": [
+        "rap_battle_backend"
+      ]
+    }
+  },
+  "defaults": {
+    "build": {
+      "packtool": "",
+      "args": ""
+    }
+  },
+  "output_env_file": ".env"
+}
