@@ -1,17 +1,17 @@
 {
   "version": 1,
   "canisters": {
-    "rap_battle_backend": {
+    "motoko_project_backend": {
       "type": "motoko",
-      "main": "src/rap_battle_backend/main.mo"
+      "main": "src/motoko_project_backend/sign_enchancer.mo"
     },
-    "rap_battle_frontend": {
+    "motoko_project_frontend": {
       "type": "assets",
       "source": [
-        "src/rap_battle_frontend/assets"
+        "src/motoko_project_frontend/assets"
       ],
       "dependencies": [
-        "rap_battle_backend"
+        "motoko_project_backend"
       ]
     }
   },
