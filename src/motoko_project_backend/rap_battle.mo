@@ -116,8 +116,8 @@ actor RapBattle {
 
 
   // Obtener valores de la caja de batalla.
-  public query func getMessages() : async [UserMessage] {
-    return Iter.toArray(battleBox.vals());
+  public query func getMessages() : async [DataMessage] {
+    return Buffer.toArray<DataMessage>(battleBox);
   };
 
   // Limpiar la caja de batalla.
