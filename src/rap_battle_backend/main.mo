@@ -1,3 +1,4 @@
+import M "model";
 import Map "mo:base/HashMap";
 import Text "mo:base/Text";
 import Principal "mo:base/Principal";
@@ -17,28 +18,14 @@ import Buffer "mo:base/Buffer";
 import Option "mo:base/Option";
 
 actor RapBattle {
-  // craer tipos especificos
-  type Rapero = Principal;
-
-  type DataMessage = {
-    user: Text;
-    img : ?Text;
-    message : Text;
-  };
-
-  type UserMessage = {
-    img : ?Text;
-    message : Text;
-  };
-
   // ID del ultimo usuario (rapero) que llamo a sendMessage()
   var lastUser : Text = "";
 
   // crear coleccion de mensajes (Battle Box)
-  let battleBox = Buffer.Buffer<DataMessage>(0); 
+  let battleBox = Buffer.Buffer<M.DataMessage>(0); 
 
   // coleccion de comentarios random
-  let randomComments : [DataMessage] = [
+  let randomComments : [M.DataMessage] = [
     {
       user = "commentator";
       img = null;
@@ -69,7 +56,7 @@ actor RapBattle {
       case(?value) Nat8.toNat(value);
       case(null) 0;
     };
-    let data : DataMessage = randomComments.get(randomNumber);
+    let data : M.DataMessage = randomComments.get(randomNumber);
 
     // agregar comentario a la coleccion
     battleBox.add(data);
@@ -78,12 +65,12 @@ actor RapBattle {
 
 
   /// Enviar mensaje del rapero.
-  public shared(msg) func sendMessage(nickname : ?Text, userMessage : UserMessage) : async Text {
+  public shared(msg) func sendMessage(nickname : ?Text, userMessage : M.UserMessage) : async Text {
     // declarar usuario
     let user : Text = Option.get<Text>(nickname, getUserID(msg));
 
     // instanciar array con mensaje del rapero
-    let data : DataMessage = {
+    let data : M.DataMessage = {
       user = user;
       img = userMessage.img;
       message = userMessage.message;
@@ -105,22 +92,22 @@ actor RapBattle {
 
 
   /// Obtener todos los mensajes enviados por la cuenta.
-  public shared(msg) func getUserMessages() : async [UserMessage] {
+  public shared(msg) func getUserMessages() : async [M.UserMessage] {
     // Filtrar los mensajes cuyo 'user' coincide con el ID de usuario del llamador
-    let userMessages = Array.filter<DataMessage>(
-      Buffer.toArray<DataMessage>(battleBox), func m = m.user == getUserID(msg)
+    let userMessages = Array.filter<M.DataMessage>(
+      Buffer.toArray<M.DataMessage>(battleBox), func m = m.user == getUserID(msg)
     );
 
     // Convertir los mensajes a un array de UserMessage
-    Array.map<DataMessage, UserMessage>(
+    Array.map<M.DataMessage, M.UserMessage>(
       userMessages, func m = { img = m.img; message = m.message }
     );
   };
 
 
   // Obtener valores de la caja de batalla.
-  public query func getMessages() : async [DataMessage] {
-    Buffer.toArray<DataMessage>(battleBox);
+  public query func getMessages() : async [M.DataMessage] {
+    Buffer.toArray<M.DataMessage>(battleBox);
   };
 
 
