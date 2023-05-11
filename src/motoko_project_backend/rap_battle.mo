@@ -61,9 +61,13 @@ actor RapBattle {
     Principal.toText(msg.caller);
   };
 
-  var randomNumber : Nat = 0;
   /// Generar un mensaje aleatorio y almacenarlo en la lista de mensajes
-  func addRandomComment() : Text {
+  func addRandomComment() : async Text {
+    let randomSeed = Random.Finite(await Random.blob());
+    let randomNumber : Nat = switch (randomSeed.binomial(Nat8.fromNat(randomComments.size() - 1))) {
+      case(?value) Nat8.toNat(value);
+      case(null) 0;
+    };
     let data : DataMessage = randomComments.get(randomNumber);
 
     // agregar comentario a la coleccion
@@ -92,7 +96,7 @@ actor RapBattle {
     // validar si el ultimo rapero que llamo la funcion es el mismo que llama actualmente.
     if (lastUser != "" and lastUser != user) {
       lastUser := user;
-      return getUserID(msg) # " ha dicho: " # userMessage.message # "\n y " # addRandomComment();
+      return getUserID(msg) # " ha dicho: " # userMessage.message # "\n y " # (await addRandomComment());
     };
 
     // actualizar el último usuario (rapero) registrado

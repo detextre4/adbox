@@ -69,19 +69,19 @@ actor SignEnhancer {
     };
 
     // return enchanced message.
-    return "signs generated to " # user # ":  " # result;
+    "signs generated to " # user # ":  " # result;
   };
 
 
   /// Function to get symbol's collection.
   public query func getSymbols() : async [Text] {
-    return Iter.toArray(replacementWords.keys());
+    Iter.toArray(replacementWords.keys());
   };
 
 
   /// Function to get length of symbol's collection.
   public query func getNumberOfSymbols() : async Nat {
-    return replacementWords.size();
+    replacementWords.size();
   };
 
 
