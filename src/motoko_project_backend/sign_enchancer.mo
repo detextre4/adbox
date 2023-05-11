@@ -46,11 +46,11 @@ actor SignEnhancer {
   };
 
   /// Function to return an enchanced text.
-  public shared(msg) func generateEnchancedText(nickname : Nickname, text: Text) : async Text {
+  public shared(msg) func generateEnchancedText(nickname : ?Nickname, text: Text) : async Text {
     // user declaration
-    let user : Text = do {
-      if (nickname == "") getID(msg)
-      else nickname;
+    let user : Text = switch nickname {
+      case(null) getID(msg);
+      case(?value) value;
     };
 
     // result declaration
