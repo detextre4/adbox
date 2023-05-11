@@ -13,6 +13,7 @@ import Hash "mo:base/Hash";
 import Iter "mo:base/Iter";
 import Random "mo:base/Random";
 import Nat8 "mo:base/Nat8";
+import Buffer "mo:base/Buffer";
 
 actor RapBattle {
   // craer tipos especificos
@@ -33,7 +34,7 @@ actor RapBattle {
   var sendMessageCount : Nat = 0;
 
   // crear coleccion de mensajes (Battle Box)
-  var battleBox : [DataMessage] = [];
+  let battleBox = Buffer.Buffer<DataMessage>(0); 
 
   // coleccion de comentarios random
   let randomComments : [DataMessage] = [
@@ -63,32 +64,33 @@ actor RapBattle {
   var randomNumber : Nat = 0;
   /// Generar un mensaje aleatorio y almacenarlo en la lista de mensajes
   func addRandomComment() : Text {
-    let array : [DataMessage] = [randomComments.get(randomNumber)];
+    let data : DataMessage = randomComments.get(randomNumber);
 
     // incrementar "numero random" hasta que alcance longitud de comentarios
     if (randomNumber == randomComments.size()) randomNumber := 0
     else randomNumber += 1;
 
-    // mutar la coleccion pincipal
-    battleBox := Array.append<DataMessage>(battleBox, array);
-    return "El publico ha dicho:  " # array.get(0).message;
+    // agregar comentario a la coleccion
+    battleBox.add(data);
+    return "El publico ha dicho:  " # data.message;
   };
 
+  /// Enviar mensaje del rapero.
   public shared(msg) func sendMessage(nickname : ?Text ,userMessage : UserMessage) : async Text {
     sendMessageCount += 1;
 
     // instanciar array con mensaje del rapero
-    let array : [DataMessage] = [{
+    let data : DataMessage = {
       user = switch(nickname) {
         case(?value) value;
         case(null) getUserID(msg);
       };
       img = userMessage.img;
       message = userMessage.message;
-    }];
+    };
 
     /// Almacenar el mensaje en la lista de mensajes
-    battleBox := Array.append<DataMessage>(battleBox, array);
+    battleBox.add(data);
 
     // validar cada 2 ejecuciones para mensaje del presentador.
     if (sendMessageCount % 2 == 0) {
@@ -102,7 +104,7 @@ actor RapBattle {
   public shared(msg) func getUserMessages() : async [UserMessage] {
     // Filtrar los mensajes cuyo 'user' coincide con el ID de usuario del llamador
     let userMessages = Array.filter<DataMessage>(
-      battleBox, func m = m.user == getUserID(msg)
+      Buffer.toArray<DataMessage>(battleBox), func m = m.user == getUserID(msg)
     );
 
     // Convertir los mensajes a un array de UserMessage
@@ -115,11 +117,12 @@ actor RapBattle {
 
   // Obtener valores de la caja de batalla.
   public query func getMessages() : async [UserMessage] {
+    Debug.print("battlebox2: " # Nat.toText(battleBox.size()));
     return Iter.toArray(battleBox.vals());
   };
 
   // Limpiar la caja de batalla.
   public func clearBattleBox() : async () {
-    battleBox := [];
+    battleBox.clear();
   };
 };
