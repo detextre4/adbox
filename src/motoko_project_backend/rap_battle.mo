@@ -70,7 +70,7 @@ actor RapBattle {
     else randomNumber += 1;
 
     // mutar la coleccion pincipal
-    battleBox := Array.append<DataMessage>(array, battleBox);
+    battleBox := Array.append<DataMessage>(battleBox, array);
     return "El publico ha dicho:  " # array.get(0).message;
   };
 
@@ -88,7 +88,7 @@ actor RapBattle {
     }];
 
     /// Almacenar el mensaje en la lista de mensajes
-    battleBox := Array.append<DataMessage>(array, battleBox);
+    battleBox := Array.append<DataMessage>(battleBox, array);
 
     // validar cada 2 ejecuciones para mensaje del presentador.
     if (sendMessageCount % 2 == 0) {
