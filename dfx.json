@@ -3,18 +3,19 @@
   "canisters": {
     "rap_battle_backend": {
       "type": "motoko",
-      "main": "src/motoko_project_backend/rap_battle.mo"
+      "main": "src/rap_battle_backend/main.mo"
     },
     "sign_enchancer_backend": {
       "type": "motoko",
-      "main": "src/motoko_project_backend/sign_enchancer.mo"
+      "main": "src/sign_enchancer_backend/main.mo"
     },
-    "sign_enchancer_frontend": {
+    "rap_battle_frontend": {
       "type": "assets",
       "source": [
-        "src/sign_enchancer_frontend/assets"
+        "src/rap_battle_frontend/assets"
       ],
       "dependencies": [
+        "rap_battle_backend",
         "sign_enchancer_backend"
       ]
     }

@@ -40,19 +40,19 @@ actor RapBattle {
   // coleccion de comentarios random
   let randomComments : [DataMessage] = [
     {
-      user = "Presenter";
+      user = "commentator";
       img = null;
       message = "jajajaja";
     },
     {
-      user = "Presenter";
+      user = "commentator";
       img = null;
       message = "uuuuuh eso dolio";
     },
     {
-      user = "Presenter";
+      user = "commentator";
       img = null;
-      message = "jaja gafo";
+      message = "ni la abuelita lo hubiera dicho mejor";
     },
   ];
 
@@ -73,8 +73,9 @@ actor RapBattle {
 
     // agregar comentario a la coleccion
     battleBox.add(data);
-    "El publico ha dicho:  " # data.message;
+    "El comentador ha dicho:  " # data.message;
   };
+
 
   /// Enviar mensaje del rapero.
   public shared(msg) func sendMessage(nickname : ?Text, userMessage : UserMessage) : async Text {
@@ -102,6 +103,7 @@ actor RapBattle {
     getUserID(msg) # " ha dicho: " # userMessage.message;
   };
 
+
   /// Obtener todos los mensajes enviados por la cuenta.
   public shared(msg) func getUserMessages() : async [UserMessage] {
     // Filtrar los mensajes cuyo 'user' coincide con el ID de usuario del llamador
@@ -120,6 +122,7 @@ actor RapBattle {
   public query func getMessages() : async [DataMessage] {
     Buffer.toArray<DataMessage>(battleBox);
   };
+
 
   // Limpiar la caja de batalla.
   public func clearBattleBox() : async () {
