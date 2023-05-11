@@ -14,6 +14,7 @@ import Iter "mo:base/Iter";
 import Random "mo:base/Random";
 import Nat8 "mo:base/Nat8";
 import Buffer "mo:base/Buffer";
+import Option "mo:base/Option";
 
 actor RapBattle {
   // craer tipos especificos
@@ -78,10 +79,7 @@ actor RapBattle {
   /// Enviar mensaje del rapero.
   public shared(msg) func sendMessage(nickname : ?Text, userMessage : UserMessage) : async Text {
     // declarar usuario
-    let user : Text = switch(nickname) {
-      case(?value) value;
-      case(null) getUserID(msg);
-    };
+    let user : Text = Option.get<Text>(nickname, getUserID(msg));
 
     // instanciar array con mensaje del rapero
     let data : DataMessage = {
