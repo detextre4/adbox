@@ -30,8 +30,8 @@ actor RapBattle {
     message : Text;
   };
 
-  // crear contador de mensajes random
-  var sendMessageCount : Nat = 0;
+  // ID del ultimo usuario (rapero) que llamo a sendMessage()
+  var lastUser : Text = "";
 
   // crear coleccion de mensajes (Battle Box)
   let battleBox = Buffer.Buffer<DataMessage>(0); 
@@ -58,7 +58,7 @@ actor RapBattle {
 
   /// Private function to get id of caller.
   func getUserID(msg : {caller : Principal}) : Text {
-    return Principal.toText(msg.caller);
+    Principal.toText(msg.caller);
   };
 
   var randomNumber : Nat = 0;
@@ -66,25 +66,22 @@ actor RapBattle {
   func addRandomComment() : Text {
     let data : DataMessage = randomComments.get(randomNumber);
 
-    // incrementar "numero random" hasta que alcance longitud de comentarios
-    if (randomNumber == randomComments.size()) randomNumber := 0
-    else randomNumber += 1;
-
     // agregar comentario a la coleccion
     battleBox.add(data);
-    return "El publico ha dicho:  " # data.message;
+    "El publico ha dicho:  " # data.message;
   };
 
   /// Enviar mensaje del rapero.
   public shared(msg) func sendMessage(nickname : ?Text, userMessage : UserMessage) : async Text {
-    sendMessageCount += 1;
+    // declarar usuario
+    let user : Text = switch(nickname) {
+      case(?value) value;
+      case(null) getUserID(msg);
+    };
 
     // instanciar array con mensaje del rapero
     let data : DataMessage = {
-      user = switch(nickname) {
-        case(?value) value;
-        case(null) getUserID(msg);
-      };
+      user = user;
       img = userMessage.img;
       message = userMessage.message;
     };
@@ -92,12 +89,15 @@ actor RapBattle {
     /// Almacenar el mensaje en la lista de mensajes
     battleBox.add(data);
 
-    // validar cada 2 ejecuciones para mensaje del presentador.
-    if (sendMessageCount % 2 == 0) {
+    // validar si el ultimo rapero que llamo la funcion es el mismo que llama actualmente.
+    if (lastUser != "" and lastUser != user) {
+      lastUser := user;
       return getUserID(msg) # " ha dicho: " # userMessage.message # "\n y " # addRandomComment();
     };
 
-    return getUserID(msg) # " ha dicho: " # userMessage.message;
+    // actualizar el último usuario (rapero) registrado
+    lastUser := user;
+    getUserID(msg) # " ha dicho: " # userMessage.message;
   };
 
   /// Obtener todos los mensajes enviados por la cuenta.
@@ -108,20 +108,20 @@ actor RapBattle {
     );
 
     // Convertir los mensajes a un array de UserMessage
-    let result : [UserMessage] = Array.map<DataMessage, UserMessage>(
+    Array.map<DataMessage, UserMessage>(
       userMessages, func m = { img = m.img; message = m.message }
     );
-    return result;
   };
 
 
   // Obtener valores de la caja de batalla.
   public query func getMessages() : async [DataMessage] {
-    return Buffer.toArray<DataMessage>(battleBox);
+    Buffer.toArray<DataMessage>(battleBox);
   };
 
   // Limpiar la caja de batalla.
   public func clearBattleBox() : async () {
+    lastUser := "";
     battleBox.clear();
   };
 };
