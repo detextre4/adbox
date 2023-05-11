@@ -76,7 +76,7 @@ actor RapBattle {
   };
 
   /// Enviar mensaje del rapero.
-  public shared(msg) func sendMessage(nickname : ?Text ,userMessage : UserMessage) : async Text {
+  public shared(msg) func sendMessage(nickname : ?Text, userMessage : UserMessage) : async Text {
     sendMessageCount += 1;
 
     // instanciar array con mensaje del rapero
@@ -117,7 +117,6 @@ actor RapBattle {
 
   // Obtener valores de la caja de batalla.
   public query func getMessages() : async [UserMessage] {
-    Debug.print("battlebox2: " # Nat.toText(battleBox.size()));
     return Iter.toArray(battleBox.vals());
   };
 
