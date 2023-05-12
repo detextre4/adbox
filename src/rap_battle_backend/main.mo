@@ -25,7 +25,7 @@ actor RapBattle {
   // crear coleccion de mensajes (Battle Box)
   let battleBox = Buffer.Buffer<M.DataMessage>(0); 
 
-  // coleccion de comentarios random
+  // coleccion de comentarios random del comentador
   let randomComments : [M.DataMessage] = [
     {
       id = null;
@@ -77,12 +77,16 @@ actor RapBattle {
   public shared(msg) func sendMessage(nickname : ?Text, userMessage : M.UserMessage) : async Text {
     if (userMessage.img == null and userMessage.message == "") throw Error.reject("debe enviar como minimo una imagen o un mensaje");
 
-    // declarar usuario
+    // declarar usuario // ! just for showcase
     let user : Text = Option.get<Text>(nickname, getUserID(msg));
+
+    // asignacion de ids
+    let bufferOfIDs = Buffer.clone(battleBox);
+    bufferOfIDs.filterEntries(func(i, item) = item.id != null);
 
     // instanciar mensaje del rapero
     let data : M.DataMessage = {
-      id = ?(battleBox.size() + 1);
+      id = ?(bufferOfIDs.size() + 1);
       user = user;
       img = userMessage.img;
       message = userMessage.message;
