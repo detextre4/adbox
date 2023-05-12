@@ -58,11 +58,13 @@ actor RapBattle {
 
   /// * Generar un mensaje aleatorio y almacenarlo en la lista de mensajes
   func addRandomComment() : async Text {
+    // generar numero aleatorio
     let randomSeed = Random.Finite(await Random.blob());
     let randomNumber : Nat = switch (randomSeed.binomial(Nat8.fromNat(randomComments.size() - 1))) {
       case(?value) Nat8.toNat(value);
       case(null) 0;
     };
+    // obtener mensaje del comentador de forma aleatoria
     let data : M.DataMessage = randomComments.get(randomNumber);
 
     // agregar comentario a la coleccion
@@ -78,7 +80,7 @@ actor RapBattle {
     // declarar usuario
     let user : Text = Option.get<Text>(nickname, getUserID(msg));
 
-    // instanciar array con mensaje del rapero
+    // instanciar mensaje del rapero
     let data : M.DataMessage = {
       id = ?(battleBox.size() + 1);
       user = user;
@@ -87,9 +89,11 @@ actor RapBattle {
       reactions = [];
     };
 
-    /// Almacenar el mensaje en la lista de mensajes
+    /// Almacenar el mensaje en la battlebox
     battleBox.add(data);
 
+
+    // * Comentador automatico
     // validar si el ultimo rapero que llamo la funcion es el mismo que llama actualmente.
     if (lastUser != "" and lastUser != user) {
       lastUser := user;
