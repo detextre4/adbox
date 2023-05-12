@@ -211,6 +211,8 @@ actor RapBattle {
           indexOfReaction := ?i;
           return true;
         });
+        if (indexOfReaction == null) throw Error.reject("No se pudo encontrar ninguna reaccion para remover");
+
         // remove reaccion del mensaje
         let x = buffer.remove(Option.get<Nat>(indexOfReaction, 0));
 
