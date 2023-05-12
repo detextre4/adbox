@@ -147,18 +147,25 @@ actor RapBattle {
           buffer.add(item);
         };
 
-        // evaluar si ya existe una reaccion correspondiente al publico que llamo
-        // en caso de existir se retorna un error
-        let alreadyHaveReaction : ?M.PublicReaction = Array.find<M.PublicReaction>(
-          Buffer.toArray<M.PublicReaction>(buffer), func(m) = m.user == getUserID(msg)
-        );
-        if (alreadyHaveReaction != null) throw Error.reject("Solo puede hacer una reaccion al mensaje");
-
-        // añadir la reaccion del publico
-        buffer.add({
-          user = getUserID(msg);
-          emoji = emoji
+        // obtener indice de la reaccion
+        var indexOfReaction : ?Nat = null;
+        Buffer.clone(buffer).filterEntries(func(i, item) {
+          if (item.user != getUserID(msg)) return false;
+          indexOfReaction := ?i;
+          return true;
         });
+        let newReaction : M.PublicReaction = { user = getUserID(msg); emoji = emoji };
+
+        switch(indexOfReaction) {
+          case(null) {
+            // añadir la reaccion del publico
+            buffer.add(newReaction);
+          };
+          case(?index) { 
+            // añadir / actualizar la reaccion del publico
+            buffer.put(index, newReaction);
+          };
+        };
 
         // reemplazar mensaje de la battleBox
         let newMessage : M.DataMessage = {
@@ -199,7 +206,7 @@ actor RapBattle {
         };
         // obtener indice de la reaccion
         var indexOfReaction : ?Nat = null;
-        buffer.filterEntries(func(i, item) {
+        Buffer.clone(buffer).filterEntries(func(i, item) {
           if (item.user != getUserID(msg)) return false;
           indexOfReaction := ?i;
           return true;
