@@ -113,7 +113,7 @@ actor RapBattle {
       Buffer.toArray<M.DataMessage>(battleBox), func(m) = m.user == getUserID(msg)
     );
 
-    // Convertir los mensajes a un array de UserMessage
+    // Convertir los mensajes a instancia de UserMessage
     Array.map<M.DataMessage, M.UserMessage>(userMessages, func(m) =
       {
         img = m.img;
