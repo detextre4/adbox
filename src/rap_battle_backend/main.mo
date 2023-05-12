@@ -28,21 +28,21 @@ actor RapBattle {
   // coleccion de comentarios random
   let randomComments : [M.DataMessage] = [
     {
-      id = 0;
+      id = null;
       user = "commentator";
       img = null;
       message = "jajajaja";
       reactions = [];
     },
     {
-      id = 0;
+      id = null;
       user = "commentator";
       img = null;
       message = "uuuuuh eso dolio";
       reactions = [];
     },
     {
-      id = 0;
+      id = null;
       user = "commentator";
       img = null;
       message = "ni la abuelita lo hubiera dicho mejor";
@@ -73,12 +73,14 @@ actor RapBattle {
 
   /// ? Enviar mensaje del rapero.
   public shared(msg) func sendMessage(nickname : ?Text, userMessage : M.UserMessage) : async Text {
+    if (userMessage.img == null and userMessage.message == "") throw throw Error.reject("debe enviar como minimo una imagen o un mensaje");
+
     // declarar usuario
     let user : Text = Option.get<Text>(nickname, getUserID(msg));
 
     // instanciar array con mensaje del rapero
     let data : M.DataMessage = {
-      id = battleBox.size() + 1;
+      id = ?(battleBox.size() + 1);
       user = user;
       img = userMessage.img;
       message = userMessage.message;
@@ -119,11 +121,13 @@ actor RapBattle {
 
   // ? Añadir reaccion del publico al mensaje de un rapero.
   public shared(msg) func addPublicReaction(id : Nat, emoji : Text) : async Text {
+    if (emoji == "") throw throw Error.reject("Debe enviar un emoji");
+
     var indexOfDataMessage : ?Nat = null;
     var dataMessage : ?M.DataMessage = null;
     // Encontrar el mensaje que el publico escogio.
     Buffer.clone(battleBox).filterEntries(func(i, item) {
-      if (item.id != id) return false;
+      if (item.id != ?id) return false;
       indexOfDataMessage := ?i;
       dataMessage := ?item;
       return true;
@@ -174,7 +178,7 @@ actor RapBattle {
     var dataMessage : ?M.DataMessage = null;
     // Encontrar el mensaje que el publico escogio.
     Buffer.clone(battleBox).filterEntries(func(i, item) {
-      if (item.id != id) return false;
+      if (item.id != ?id) return false;
       indexOfDataMessage := ?i;
       dataMessage := ?item;
       return true;

@@ -5,7 +5,7 @@ module {
   public type Rapero = Principal;
 
   public type DataMessage = {
-    id : Nat;
+    id : ?Nat;
     user : Text;
     img : ?Text;
     message : Text;
