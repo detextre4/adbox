@@ -16,6 +16,7 @@ import Random "mo:base/Random";
 import Nat8 "mo:base/Nat8";
 import Buffer "mo:base/Buffer";
 import Option "mo:base/Option";
+import Error "mo:base/Error";
 
 actor RapBattle {
   // ID del ultimo usuario (rapero) que llamo a sendMessage()
@@ -129,7 +130,7 @@ actor RapBattle {
     });
 
     switch(dataMessage) {
-      case(null) "No se pudo encontrar el id del mensaje";
+      case(null) throw Error.reject("No se pudo encontrar el id del mensaje");
 
       case(?message) {
         // crear copia de la lista de reacciones del mensaje
@@ -137,6 +138,14 @@ actor RapBattle {
         for(item in message.reactions.vals()) {
           buffer.add(item);
         };
+
+        // evaluar si ya existe una reaccion correspondiente al publico que llamo
+        // en caso de existir se retorna un error
+        let alreadyHaveReaction : ?M.PublicReaction = Array.find<M.PublicReaction>(
+          Buffer.toArray<M.PublicReaction>(buffer), func(m) = m.user == getUserID(msg)
+        );
+        if (alreadyHaveReaction != null) throw Error.reject("Solo puede hacer una reaccion al mensaje");
+
         // añadir la reaccion del publico
         buffer.add({
           user = getUserID(msg);
@@ -172,7 +181,7 @@ actor RapBattle {
     });
 
     switch(dataMessage) {
-      case(null) "No se pudo encontrar el id del mensaje";
+      case(null) throw Error.reject("No se pudo encontrar el id del mensaje");
 
       case(?message) {
         // crear copia de la lista de reacciones del mensaje
