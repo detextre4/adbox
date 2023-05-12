@@ -73,7 +73,7 @@ actor RapBattle {
 
   /// ? Enviar mensaje del rapero.
   public shared(msg) func sendMessage(nickname : ?Text, userMessage : M.UserMessage) : async Text {
-    if (userMessage.img == null and userMessage.message == "") throw throw Error.reject("debe enviar como minimo una imagen o un mensaje");
+    if (userMessage.img == null and userMessage.message == "") throw Error.reject("debe enviar como minimo una imagen o un mensaje");
 
     // declarar usuario
     let user : Text = Option.get<Text>(nickname, getUserID(msg));
@@ -121,7 +121,7 @@ actor RapBattle {
 
   // ? Añadir reaccion del publico al mensaje de un rapero.
   public shared(msg) func addPublicReaction(id : Nat, emoji : Text) : async Text {
-    if (emoji == "") throw throw Error.reject("Debe enviar un emoji");
+    if (emoji == "") throw Error.reject("Debe enviar un emoji");
 
     var indexOfDataMessage : ?Nat = null;
     var dataMessage : ?M.DataMessage = null;
