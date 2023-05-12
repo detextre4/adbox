@@ -27,29 +27,35 @@ actor RapBattle {
   // coleccion de comentarios random
   let randomComments : [M.DataMessage] = [
     {
+      id = 0;
       user = "commentator";
       img = null;
       message = "jajajaja";
+      reactions = [];
     },
     {
+      id = 0;
       user = "commentator";
       img = null;
       message = "uuuuuh eso dolio";
+      reactions = [];
     },
     {
+      id = 0;
       user = "commentator";
       img = null;
       message = "ni la abuelita lo hubiera dicho mejor";
+      reactions = [];
     },
   ];
 
 
-  /// Private function to get id of caller.
+  /// * Private function to get id of caller.
   func getUserID(msg : {caller : Principal}) : Text {
     Principal.toText(msg.caller);
   };
 
-  /// Generar un mensaje aleatorio y almacenarlo en la lista de mensajes
+  /// * Generar un mensaje aleatorio y almacenarlo en la lista de mensajes
   func addRandomComment() : async Text {
     let randomSeed = Random.Finite(await Random.blob());
     let randomNumber : Nat = switch (randomSeed.binomial(Nat8.fromNat(randomComments.size() - 1))) {
@@ -64,16 +70,18 @@ actor RapBattle {
   };
 
 
-  /// Enviar mensaje del rapero.
+  /// ? Enviar mensaje del rapero.
   public shared(msg) func sendMessage(nickname : ?Text, userMessage : M.UserMessage) : async Text {
     // declarar usuario
     let user : Text = Option.get<Text>(nickname, getUserID(msg));
 
     // instanciar array con mensaje del rapero
     let data : M.DataMessage = {
+      id = battleBox.size() + 1;
       user = user;
       img = userMessage.img;
       message = userMessage.message;
+      reactions = [];
     };
 
     /// Almacenar el mensaje en la lista de mensajes
@@ -91,27 +99,120 @@ actor RapBattle {
   };
 
 
-  /// Obtener todos los mensajes enviados por la cuenta.
+  /// ? Obtener todos los mensajes enviados por la cuenta.
   public shared(msg) func getUserMessages() : async [M.UserMessage] {
     // Filtrar los mensajes cuyo 'user' coincide con el ID de usuario del llamador
-    let userMessages = Array.filter<M.DataMessage>(
-      Buffer.toArray<M.DataMessage>(battleBox), func m = m.user == getUserID(msg)
+    let userMessages : [M.DataMessage] = Array.filter<M.DataMessage>(
+      Buffer.toArray<M.DataMessage>(battleBox), func(m) = m.user == getUserID(msg)
     );
 
     // Convertir los mensajes a un array de UserMessage
-    Array.map<M.DataMessage, M.UserMessage>(
-      userMessages, func m = { img = m.img; message = m.message }
+    Array.map<M.DataMessage, M.UserMessage>(userMessages, func(m) =
+      {
+        img = m.img;
+        message = m.message;
+      }
     );
   };
 
 
-  // Obtener valores de la caja de batalla.
+  // ? Añadir reaccion del publico al mensaje de un rapero.
+  public shared(msg) func addPublicReaction(id : Nat, emoji : Text) : async Text {
+    var indexOfDataMessage : ?Nat = null;
+    var dataMessage : ?M.DataMessage = null;
+    // Encontrar el mensaje que el publico escogio.
+    Buffer.clone(battleBox).filterEntries(func(i, item) {
+      if (item.id != id) return false;
+      indexOfDataMessage := ?i;
+      dataMessage := ?item;
+      return true;
+    });
+
+    switch(dataMessage) {
+      case(null) "No se pudo encontrar el id del mensaje";
+
+      case(?message) {
+        // crear copia de la lista de reacciones del mensaje
+        let buffer = Buffer.Buffer<M.PublicReaction>(0);
+        for(item in message.reactions.vals()) {
+          buffer.add(item);
+        };
+        // añadir la reaccion del publico
+        buffer.add({
+          user = getUserID(msg);
+          emoji = emoji
+        });
+
+        // reemplazar mensaje de la battleBox
+        let newMessage : M.DataMessage = {
+          id = message.id;
+          user = message.user;
+          img = message.img;
+          message = message.message;
+          reactions = Buffer.toArray<M.PublicReaction>(buffer);
+        };
+        battleBox.put(Option.get<Nat>(indexOfDataMessage, 0), newMessage);
+
+        getUserID(msg) # " ha reaccionado a " # newMessage.user
+      };
+    };
+  };
+
+
+  // ? Remover reaccion del publico al mensaje de un rapero.
+  public shared(msg) func removePublicReaction(id: Nat) : async Text {
+    var indexOfDataMessage : ?Nat = null;
+    var dataMessage : ?M.DataMessage = null;
+    // Encontrar el mensaje que el publico escogio.
+    Buffer.clone(battleBox).filterEntries(func(i, item) {
+      if (item.id != id) return false;
+      indexOfDataMessage := ?i;
+      dataMessage := ?item;
+      return true;
+    });
+
+    switch(dataMessage) {
+      case(null) "No se pudo encontrar el id del mensaje";
+
+      case(?message) {
+        // crear copia de la lista de reacciones del mensaje
+        let buffer = Buffer.Buffer<M.PublicReaction>(0);
+        for(item in message.reactions.vals()) {
+          buffer.add(item);
+        };
+        // obtener indice de la reaccion
+        var indexOfReaction : ?Nat = null;
+        buffer.filterEntries(func(i, item) {
+          if (item.user != getUserID(msg)) return false;
+          indexOfReaction := ?i;
+          return true;
+        });
+        // remove reaccion del mensaje
+        let x = buffer.remove(Option.get<Nat>(indexOfReaction, 0));
+
+        // reemplazar mensaje de la battleBox
+        let newMessage : M.DataMessage = {
+          id = message.id;
+          user = message.user;
+          img = message.img;
+          message = message.message;
+          reactions = Buffer.toArray<M.PublicReaction>(buffer);
+        };
+        battleBox.put(Option.get<Nat>(indexOfDataMessage, 0), newMessage);
+
+        getUserID(msg) # " ha retirado su reaccion a " # newMessage.user;
+      };
+    };
+  };
+
+
+  // ? Obtener valores de la caja de batalla.
   public query func getMessages() : async [M.DataMessage] {
     Buffer.toArray<M.DataMessage>(battleBox);
   };
 
 
-  // Limpiar la caja de batalla.
+  // ? Limpiar la caja de batalla.
   public func clearBattleBox() : async () {
     lastUser := "";
     battleBox.clear();
