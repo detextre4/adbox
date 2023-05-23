@@ -1,6 +1,6 @@
 # rap_battle_project
 
-Welcome to your new rap_battle project and to the internet computer development community. By default, creating a new project adds this README and some template files to your project directory. You can edit these template files to customize your project and to include your own code to speed up the development cycle.
+Hello and welcome to my project, which started as rap_battle, for illustrative purposes, but is designed to be a space where various topics can be discussed; 2 users enter with the roles of debaters, and the spectators or the public that reacts enter, at the end they have the option of closing the debate and the public chooses the best argument. The final name they would think of in the future.
 
 To get started, you might want to explore the project directory structure and the default configuration file. Working with this project in your development environment will not affect any production deployment or identity tokens.
 
