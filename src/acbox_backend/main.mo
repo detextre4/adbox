@@ -18,12 +18,12 @@ import Buffer "mo:base/Buffer";
 import Option "mo:base/Option";
 import Error "mo:base/Error";
 
-actor RapBattle {
+actor ACBox {
   // ID of the last user (rapper) who called sendMessage()
   var lastUser : Text = "";
 
   // create message collection (Battle Box)
-  let battleBox = Buffer.Buffer<M.DataMessage>(0); 
+  let acBox = Buffer.Buffer<M.DataMessage>(0); 
 
   // commenter's random comment collection
   let randomComments : [M.DataMessage] = [
@@ -68,7 +68,7 @@ actor RapBattle {
     let data : M.DataMessage = randomComments.get(randomNumber);
 
     // add comment to collection
-    battleBox.add(data);
+    acBox.add(data);
     "El comentador ha dicho:  " # data.message;
   };
 
@@ -81,7 +81,7 @@ actor RapBattle {
     let user : Text = Option.get<Text>(nickname, getUserID(msg));
 
     // ids assignment
-    let bufferOfIDs = Buffer.clone(battleBox);
+    let bufferOfIDs = Buffer.clone(acBox);
     bufferOfIDs.filterEntries(func(i, item) = item.id != null);
 
     // instantiate rapper message
@@ -94,7 +94,7 @@ actor RapBattle {
     };
 
     /// Store the message in the battlebox
-    battleBox.add(data);
+    acBox.add(data);
 
 
     // * automatic commentator
@@ -114,7 +114,7 @@ actor RapBattle {
   public shared(msg) func getUserMessages() : async [M.UserMessage] {
     // Filtrar los mensajes cuyo 'user' coincide con el ID de usuario del llamador
     let userMessages : [M.DataMessage] = Array.filter<M.DataMessage>(
-      Buffer.toArray<M.DataMessage>(battleBox), func(m) = m.user == getUserID(msg)
+      Buffer.toArray<M.DataMessage>(acBox), func(m) = m.user == getUserID(msg)
     );
 
     // Convertir los mensajes a instancia de UserMessage
@@ -134,7 +134,7 @@ actor RapBattle {
     var indexOfDataMessage : ?Nat = null;
     var dataMessage : ?M.DataMessage = null;
     // Find the message that the public chose.
-    Buffer.clone(battleBox).filterEntries(func(i, item) {
+    Buffer.clone(acBox).filterEntries(func(i, item) {
       if (item.id != ?id) return false;
       indexOfDataMessage := ?i;
       dataMessage := ?item;
@@ -179,7 +179,7 @@ actor RapBattle {
           message = message.message;
           reactions = Buffer.toArray<M.PublicReaction>(buffer);
         };
-        battleBox.put(Option.get<Nat>(indexOfDataMessage, 0), newMessage);
+        acBox.put(Option.get<Nat>(indexOfDataMessage, 0), newMessage);
 
         getUserID(msg) # " ha reaccionado a " # newMessage.user
       };
@@ -192,7 +192,7 @@ actor RapBattle {
     var indexOfDataMessage : ?Nat = null;
     var dataMessage : ?M.DataMessage = null;
     // Find the message that the public chose.
-    Buffer.clone(battleBox).filterEntries(func(i, item) {
+    Buffer.clone(acBox).filterEntries(func(i, item) {
       if (item.id != ?id) return false;
       indexOfDataMessage := ?i;
       dataMessage := ?item;
@@ -228,7 +228,7 @@ actor RapBattle {
           message = message.message;
           reactions = Buffer.toArray<M.PublicReaction>(buffer);
         };
-        battleBox.put(Option.get<Nat>(indexOfDataMessage, 0), newMessage);
+        acBox.put(Option.get<Nat>(indexOfDataMessage, 0), newMessage);
 
         getUserID(msg) # " ha retirado su reaccion a " # newMessage.user;
       };
@@ -238,13 +238,13 @@ actor RapBattle {
 
   // ? Get values from the battle box.
   public query func getMessages() : async [M.DataMessage] {
-    Buffer.toArray<M.DataMessage>(battleBox);
+    Buffer.toArray<M.DataMessage>(acBox);
   };
 
 
   // ? Clear the battle box.
   public func clearBattleBox() : async () {
     lastUser := "";
-    battleBox.clear();
+    acBox.clear();
   };
 };
