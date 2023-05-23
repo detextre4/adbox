@@ -19,13 +19,13 @@ import Option "mo:base/Option";
 import Error "mo:base/Error";
 
 actor RapBattle {
-  // ID del ultimo usuario (rapero) que llamo a sendMessage()
+  // ID of the last user (rapper) who called sendMessage()
   var lastUser : Text = "";
 
-  // crear coleccion de mensajes (Battle Box)
+  // create message collection (Battle Box)
   let battleBox = Buffer.Buffer<M.DataMessage>(0); 
 
-  // coleccion de comentarios random del comentador
+  // commenter's random comment collection
   let randomComments : [M.DataMessage] = [
     {
       id = null;
@@ -56,18 +56,18 @@ actor RapBattle {
     Principal.toText(msg.caller);
   };
 
-  /// * Generar un mensaje aleatorio y almacenarlo en la lista de mensajes
+  /// * Generate a random message and store it in the message list
   func addRandomComment() : async Text {
-    // generar numero aleatorio
+    // generate random number
     let randomSeed = Random.Finite(await Random.blob());
     let randomNumber : Nat = switch (randomSeed.binomial(Nat8.fromNat(randomComments.size() - 1))) {
       case(?value) Nat8.toNat(value);
       case(null) 0;
     };
-    // obtener mensaje del comentador de forma aleatoria
+    // get commenter message randomly
     let data : M.DataMessage = randomComments.get(randomNumber);
 
-    // agregar comentario a la coleccion
+    // add comment to collection
     battleBox.add(data);
     "El comentador ha dicho:  " # data.message;
   };
@@ -77,14 +77,14 @@ actor RapBattle {
   public shared(msg) func sendMessage(nickname : ?Text, userMessage : M.UserMessage) : async Text {
     if (userMessage.img == null and userMessage.message == "") throw Error.reject("debe enviar como minimo una imagen o un mensaje");
 
-    // declarar usuario // ! just for showcase
+    // declare user // ! just for showcase
     let user : Text = Option.get<Text>(nickname, getUserID(msg));
 
-    // asignacion de ids
+    // ids assignment
     let bufferOfIDs = Buffer.clone(battleBox);
     bufferOfIDs.filterEntries(func(i, item) = item.id != null);
 
-    // instanciar mensaje del rapero
+    // instantiate rapper message
     let data : M.DataMessage = {
       id = ?(bufferOfIDs.size() + 1);
       user = user;
@@ -93,24 +93,24 @@ actor RapBattle {
       reactions = [];
     };
 
-    /// Almacenar el mensaje en la battlebox
+    /// Store the message in the battlebox
     battleBox.add(data);
 
 
-    // * Comentador automatico
-    // validar si el ultimo rapero que llamo la funcion es el mismo que llama actualmente.
+    // * automatic commentator
+    // Check if the last rapper who called the function is the same one that is currently calling.
     if (lastUser != "" and lastUser != user) {
       lastUser := user;
       return getUserID(msg) # " ha dicho: " # userMessage.message # "\n y " # (await addRandomComment());
     };
 
-    // actualizar el último usuario (rapero) registrado
+    // update the last registered user (rapper)
     lastUser := user;
     getUserID(msg) # " ha dicho: " # userMessage.message;
   };
 
 
-  /// ? Obtener todos los mensajes enviados por la cuenta.
+  /// ? Get all messages sent by the account.
   public shared(msg) func getUserMessages() : async [M.UserMessage] {
     // Filtrar los mensajes cuyo 'user' coincide con el ID de usuario del llamador
     let userMessages : [M.DataMessage] = Array.filter<M.DataMessage>(
@@ -127,13 +127,13 @@ actor RapBattle {
   };
 
 
-  // ? Añadir reaccion del publico al mensaje de un rapero.
+  // ? Add public reaction to a rapper's message.
   public shared(msg) func addPublicReaction(id : Nat, emoji : Text) : async Text {
     if (emoji == "") throw Error.reject("Debe enviar un emoji");
 
     var indexOfDataMessage : ?Nat = null;
     var dataMessage : ?M.DataMessage = null;
-    // Encontrar el mensaje que el publico escogio.
+    // Find the message that the public chose.
     Buffer.clone(battleBox).filterEntries(func(i, item) {
       if (item.id != ?id) return false;
       indexOfDataMessage := ?i;
@@ -145,13 +145,13 @@ actor RapBattle {
       case(null) throw Error.reject("No se pudo encontrar el id del mensaje");
 
       case(?message) {
-        // crear copia de la lista de reacciones del mensaje
+        // create copy of message reaction list
         let buffer = Buffer.Buffer<M.PublicReaction>(0);
         for(item in message.reactions.vals()) {
           buffer.add(item);
         };
 
-        // obtener indice de la reaccion
+        // get reaction index
         var indexOfReaction : ?Nat = null;
         Buffer.clone(buffer).filterEntries(func(i, item) {
           if (item.user != getUserID(msg)) return false;
@@ -162,16 +162,16 @@ actor RapBattle {
 
         switch(indexOfReaction) {
           case(null) {
-            // añadir la reaccion del publico
+            // add public reaction
             buffer.add(newReaction);
           };
           case(?index) { 
-            // añadir / actualizar la reaccion del publico
+            // add / update public reaction
             buffer.put(index, newReaction);
           };
         };
 
-        // reemplazar mensaje de la battleBox
+        // replace battlebox message
         let newMessage : M.DataMessage = {
           id = message.id;
           user = message.user;
@@ -191,7 +191,7 @@ actor RapBattle {
   public shared(msg) func removePublicReaction(id: Nat) : async Text {
     var indexOfDataMessage : ?Nat = null;
     var dataMessage : ?M.DataMessage = null;
-    // Encontrar el mensaje que el publico escogio.
+    // Find the message that the public chose.
     Buffer.clone(battleBox).filterEntries(func(i, item) {
       if (item.id != ?id) return false;
       indexOfDataMessage := ?i;
@@ -203,12 +203,12 @@ actor RapBattle {
       case(null) throw Error.reject("No se pudo encontrar el id del mensaje");
 
       case(?message) {
-        // crear copia de la lista de reacciones del mensaje
+        // create copy of message reaction list
         let buffer = Buffer.Buffer<M.PublicReaction>(0);
         for(item in message.reactions.vals()) {
           buffer.add(item);
         };
-        // obtener indice de la reaccion
+        // get reaction index
         var indexOfReaction : ?Nat = null;
         Buffer.clone(buffer).filterEntries(func(i, item) {
           if (item.user != getUserID(msg)) return false;
@@ -217,10 +217,10 @@ actor RapBattle {
         });
         if (indexOfReaction == null) throw Error.reject("No se pudo encontrar ninguna reaccion para remover");
 
-        // remove reaccion del mensaje
+        // remove reaction from message
         let x = buffer.remove(Option.get<Nat>(indexOfReaction, 0));
 
-        // reemplazar mensaje de la battleBox
+        // replace battlebox message
         let newMessage : M.DataMessage = {
           id = message.id;
           user = message.user;
@@ -236,13 +236,13 @@ actor RapBattle {
   };
 
 
-  // ? Obtener valores de la caja de batalla.
+  // ? Get values from the battle box.
   public query func getMessages() : async [M.DataMessage] {
     Buffer.toArray<M.DataMessage>(battleBox);
   };
 
 
-  // ? Limpiar la caja de batalla.
+  // ? Clear the battle box.
   public func clearBattleBox() : async () {
     lastUser := "";
     battleBox.clear();
