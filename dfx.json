@@ -1,11 +1,11 @@
 {
   "canisters": {
     "sign_enchancer_backend": {
-      "main": "src/sign_enchancer_backend/main.mo",
+      "main": "backend/sign_enchancer_backend/main.mo",
       "type": "motoko"
     },
     "acbox_backend": {
-      "main": "src/acbox_backend/main.mo",
+      "main": "backend/acbox_backend/main.mo",
       "type": "motoko"
     },
     "acbox_frontend": {

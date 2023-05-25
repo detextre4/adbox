@@ -1,5 +1,5 @@
-import { acbox_backend } from "../../declarations/acbox_backend";
-import { sign_enchancer_backend } from "../../declarations/sign_enchancer_backend";
+import { acbox_backend } from "../../../declarations/acbox_backend";
+import { sign_enchancer_backend } from "../../../declarations/sign_enchancer_backend";
 
 document.querySelector("form").addEventListener("submit", async (e) => {
   e.preventDefault();

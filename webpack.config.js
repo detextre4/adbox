@@ -17,7 +17,7 @@ module.exports = {
   entry: {
     // The frontend.entrypoint points to the HTML file for this build, so we need
     // to replace the extension to `.js`.
-    index: path.join(__dirname, frontend_entry).replace(/\.html$/, ".js"),
+    index: path.join(__dirname, "src", frontendDirectory, "src", "scripts", "index.js"),
   },
   devtool: isDevelopment ? "source-map" : false,
   optimization: {
