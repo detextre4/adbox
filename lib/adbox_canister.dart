@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 /// see ./dfx/local/counter.did
 abstract class ADBoxMethod {
   /// use staic const as method name
+  static const getUserID = "getUserID";
   static const addPublicReaction = "addPublicReaction";
   static const clearBattleBox = "clearBattleBox";
   static const getMessages = "getMessages";
@@ -13,6 +14,7 @@ abstract class ADBoxMethod {
 
   /// you can copy/paste from .dfx/local/canisters/counter/counter.did.js
   static final ServiceClass idl = IDL.Service({
+    ADBoxMethod.getUserID: IDL.Func([], [IDL.Text], []),
     ADBoxMethod.addPublicReaction: IDL.Func([IDL.Nat, IDL.Text], [], []),
     ADBoxMethod.clearBattleBox: IDL.Func([], [], []),
     ADBoxMethod.getMessages: IDL.Func([], [
@@ -68,19 +70,30 @@ class ADBoxCanister {
   ///  CanisterActor.getFunc(String)?.call(List<dynamic>) -> Future<dynamic>
   /// ```
 
-  //! not yet
-  Future<void> addPublicReaction() async {
+  Future<String> getUserID() async {
     try {
-      await actor?.getFunc(ADBoxMethod.addPublicReaction)?.call([]);
+      return await actor?.getFunc(ADBoxMethod.getUserID)?.call([]);
     } catch (e) {
       rethrow;
     }
   }
 
-  //! not yet
-  Future<void> removePublicReaction() async {
+  Future<void> addPublicReaction({
+    required int id,
+    required String emoji,
+  }) async {
     try {
-      await actor?.getFunc(ADBoxMethod.removePublicReaction)?.call([]);
+      await actor?.getFunc(ADBoxMethod.addPublicReaction)?.call([id, emoji]);
+      debugPrint("reaction added ⭐");
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> removePublicReaction({required int id}) async {
+    try {
+      await actor?.getFunc(ADBoxMethod.removePublicReaction)?.call([id]);
+      debugPrint("reaction removed ⭐");
     } catch (e) {
       rethrow;
     }

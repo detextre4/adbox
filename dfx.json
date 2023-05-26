@@ -1,9 +1,5 @@
 {
 	"canisters": {
-    "sign_enchancer_backend": {
-      "main": "backend/sign_enchancer_backend/main.mo",
-      "type": "motoko"
-    },
     "adbox_backend": {
       "main": "backend/adbox_backend/main.mo",
       "type": "motoko"

@@ -1,5 +1,7 @@
 import 'package:adbox/adbox_canister.dart';
 import 'package:adbox/bubble_message_widget.dart';
+import 'package:adbox/chat_bar_widget.dart';
+import 'package:adbox/public_bar_widget.dart';
 import 'package:agent_dart/agent/agent.dart';
 import 'package:flutter/material.dart';
 
@@ -34,10 +36,16 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final adBoxCanister = ADBoxCanister();
   final adBox = [];
+  String userID = "";
+  String userIDCopy = "";
+  bool changedUserID = false;
 
   Future<void> initCanister({Identity? identity}) async {
     // set agent when other paramater comes in like new Identity
     await adBoxCanister.setAgent(newIdentity: identity);
+    final value = await adBoxCanister.getUserID();
+    userID = value;
+    userIDCopy = value;
     await _getMessage();
   }
 
@@ -60,6 +68,19 @@ class _MyHomePageState extends State<MyHomePage> {
     await _getMessage();
   }
 
+  Future<void> _addReaction({
+    required int id,
+    required String emoji,
+  }) async {
+    await adBoxCanister.addPublicReaction(id: id, emoji: emoji);
+    await _getMessage();
+  }
+
+  Future<void> _removeReaction({required int id}) async {
+    await adBoxCanister.removePublicReaction(id: id);
+    await _getMessage();
+  }
+
   Future<void> _clearMessages() async {
     await adBoxCanister.clearBattleBox();
     await _getMessage();
@@ -75,39 +96,62 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('Message in box are:'),
-            const Divider(height: 30),
+        padding:
+            const EdgeInsets.only(top: 16, bottom: 16, left: 16, right: 40),
+        child: Row(
+          children: [
+            const PublicBarWidget(),
             Expanded(
-                child: ListView.separated(
-              itemCount: adBox.length,
-              itemBuilder: (context, index) =>
-                  BubbleMessageWidget(adBox, index),
-              separatorBuilder: (context, index) => const SizedBox(height: 20),
-            )),
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    const Text('Message in box are:'),
+                    const Divider(height: 30),
+                    Expanded(
+                        child: ListView.separated(
+                      itemCount: adBox.length,
+                      itemBuilder: (context, index) => BubbleMessageWidget(
+                        userID: userID,
+                        data: adBox,
+                        index: index,
+                        addReaction: _addReaction,
+                        removeReaction: _removeReaction,
+                      ),
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: 20),
+                    )),
+                    const SizedBox(height: 20),
+                    ChatBarWidget(
+                      userID: userID,
+                      sendMessage: _sendMessage,
+                    ),
+                  ]),
+            ),
           ],
         ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          FloatingActionButton(
-            onPressed: () => _sendMessage(message: "holasd"),
-            tooltip: 'send message',
-            child: const Icon(Icons.add),
-          ),
-          const SizedBox(width: 20),
           FloatingActionButton(
             onPressed: _clearMessages,
             tooltip: 'clear message',
-            child: const Icon(Icons.close),
+            child: const Icon(Icons.cleaning_services),
+          ),
+          const SizedBox(width: 10),
+          FloatingActionButton(
+            onPressed: () {
+              userID = changedUserID ? userIDCopy : "pedrito";
+              changedUserID = !changedUserID;
+              setState(() {});
+            },
+            tooltip: 'change user',
+            child: const Icon(Icons.person_2),
           ),
         ],
       ),

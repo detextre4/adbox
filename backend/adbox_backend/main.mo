@@ -50,9 +50,13 @@ actor ADBox {
     },
   ];
 
+  /// * Private function to get id of caller.
+  public shared(msg) func getUserID() : async Text {
+    Principal.toText(msg.caller);
+  };
 
   /// * Private function to get id of caller.
-  func getUserID(msg : {caller : Principal}) : Text {
+  func getUserIDPrivate(msg : {caller : Principal}) : Text {
     Principal.toText(msg.caller);
   };
 
@@ -77,7 +81,7 @@ actor ADBox {
     if (img == "" and userMessage == "") throw Error.reject("debe enviar como minimo una imagen o un mensaje");
 
     // declare user // ! just for showcase
-    let user : Text = if (nickname != "") nickname else getUserID(msg);
+    let user : Text = if (nickname != "") nickname else getUserIDPrivate(msg);
 
     // ids assignment
     let bufferOfIDs = Buffer.clone(adBox);
@@ -135,11 +139,11 @@ actor ADBox {
         // get reaction index
         var indexOfReaction : ?Nat = null;
         Buffer.clone(buffer).filterEntries(func(i, item) {
-          if (item.user != getUserID(msg)) return false;
+          if (item.user != getUserIDPrivate(msg)) return false;
           indexOfReaction := ?i;
           return true;
         });
-        let newReaction : M.PublicReaction = { user = getUserID(msg); emoji = emoji };
+        let newReaction : M.PublicReaction = { user = getUserIDPrivate(msg); emoji = emoji };
 
         switch(indexOfReaction) {
           case(null) {
@@ -190,7 +194,7 @@ actor ADBox {
         // get reaction index
         var indexOfReaction : ?Nat = null;
         Buffer.clone(buffer).filterEntries(func(i, item) {
-          if (item.user != getUserID(msg)) return false;
+          if (item.user != getUserIDPrivate(msg)) return false;
           indexOfReaction := ?i;
           return true;
         });
