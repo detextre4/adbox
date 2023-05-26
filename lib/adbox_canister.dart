@@ -33,12 +33,15 @@ abstract class ADBoxMethod {
   });
 }
 
-///
+//* URLs:
+//* local: http://127.0.0.1:4943/?canisterId=bd3sg-teaaa-aaaaa-qaaba-cai&id=bkyz2-fmaaa-aaaaa-qaaaq-cai
+//* id: https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=ffy5o-bqaaa-aaaag-abphq-cai
+
 /// ADBoxCanister class, with AgentFactory within
 class ADBoxCanister {
   ADBoxCanister({
-    this.canisterId = 'bkyz2-fmaaa-aaaaa-qaaaq-cai',
-    this.url = 'http://127.0.0.1:4943',
+    this.canisterId = 'ffy5o-bqaaa-aaaag-abphq-cai', //? local: bkyz2-fmaaa-aaaaa-qaaaq-cai || ic: ffy5o-bqaaa-aaaag-abphq-cai
+    this.url = 'https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io', //? local: http://127.0.0.1:4943 || ic: https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io
   });
   final String canisterId;
   final String url;
