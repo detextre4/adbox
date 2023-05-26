@@ -14,7 +14,7 @@ Welcome to your new adbox (Anonymous disscusion box) project and to the internet
         <true/>
     </dict>
     
-5. Deploy canister use `dfx deploy`, the `ACBox` canister will be running on your local replica. Make sure you put the ADBoxCanister canister id inside `.dfx/local/canister_ids.json` to your `main.dart`, the json like this:
+5. Deploy canister use `dfx deploy`, the `ADBox` canister will be running on your local replica. Make sure you put the ADBoxCanister canister id inside `.dfx/local/canister_ids.json` to your `main.dart`, the json like this:
     json
     {
         "__Candid_UI": {
