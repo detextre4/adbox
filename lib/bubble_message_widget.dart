@@ -149,39 +149,3 @@ class BubbleMessageWidget extends StatelessWidget {
     );
   }
 }
-
-//! unused
-Future<String?> showPopup(
-  BuildContext context,
-  Map<String, IconData> items,
-) async {
-  //*get the render box from the context
-  final RenderBox renderBox = context.findRenderObject() as RenderBox;
-  //*get the global position, from the widget local position
-  final offset = renderBox.localToGlobal(Offset.zero);
-
-  //*calculate the start point in this case, below the button
-  final left = offset.dx;
-  final top = offset.dy + renderBox.size.height;
-  //*The right does not indicates the width
-  final right = left + renderBox.size.width;
-
-  return await showMenu<String>(
-      context: context,
-      position: RelativeRect.fromLTRB(left, top, right, 0.0),
-      items: items.entries.map<PopupMenuEntry<String>>((entry) {
-        return PopupMenuItem(
-          value: entry.key,
-          child: SizedBox(
-            // width: 200, //*width of popup
-            child: Row(
-              children: [
-                Icon(entry.value, color: Colors.redAccent),
-                const SizedBox(width: 10.0),
-                Text(entry.key)
-              ],
-            ),
-          ),
-        );
-      }).toList());
-}
