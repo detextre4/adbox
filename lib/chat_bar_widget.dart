@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class ChatBarWidget extends StatelessWidget {
-  ChatBarWidget({
+class ChatBarWidget extends StatefulWidget {
+  const ChatBarWidget({
     super.key,
     required this.userID,
     required this.sendMessage,
@@ -13,6 +13,11 @@ class ChatBarWidget extends StatelessWidget {
     String img,
   }) sendMessage;
 
+  @override
+  State<ChatBarWidget> createState() => _ChatBarWidgetState();
+}
+
+class _ChatBarWidgetState extends State<ChatBarWidget> {
   final controller = TextEditingController();
 
   @override
@@ -31,13 +36,14 @@ class ChatBarWidget extends StatelessWidget {
           suffixIcon: Container(
             margin: const EdgeInsets.only(right: 10),
             child: IconButton(
-              onPressed: () =>
-                  sendMessage(nickname: userID, message: controller.text),
+              onPressed: () => widget.sendMessage(
+                  nickname: widget.userID, message: controller.text),
               icon: const Icon(Icons.send,
                   color: Color.fromARGB(255, 209, 204, 204)),
             ),
           )),
-      onSubmitted: (value) => sendMessage(nickname: userID, message: value),
+      onSubmitted: (value) =>
+          widget.sendMessage(nickname: widget.userID, message: value),
     );
   }
 }

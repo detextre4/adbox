@@ -2,6 +2,7 @@ import 'package:adbox/adbox_canister.dart';
 import 'package:adbox/bubble_message_widget.dart';
 import 'package:adbox/chat_bar_widget.dart';
 import 'package:adbox/public_bar_widget.dart';
+import 'package:adbox/utils/responsive_layout.dart';
 import 'package:agent_dart/agent/agent.dart';
 import 'package:flutter/material.dart';
 
@@ -100,11 +101,38 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: Padding(
-        padding:
-            const EdgeInsets.only(top: 16, bottom: 16, left: 16, right: 40),
-        child: Row(
-          children: [
+      body: ResponsiveLayout(
+        tablet: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                const Text('Message in box are:'),
+                const Divider(height: 30),
+                Expanded(
+                    child: ListView.separated(
+                  itemCount: adBox.length,
+                  itemBuilder: (context, index) => BubbleMessageWidget(
+                    userID: userID,
+                    data: adBox,
+                    index: index,
+                    addReaction: _addReaction,
+                    removeReaction: _removeReaction,
+                  ),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 20),
+                )),
+                const SizedBox(height: 20),
+                ChatBarWidget(
+                  userID: userID,
+                  sendMessage: _sendMessage,
+                ),
+              ]),
+        ),
+        desktop: Padding(
+          padding:
+              const EdgeInsets.only(top: 16, bottom: 16, left: 16, right: 40),
+          child: Row(children: [
             const PublicBarWidget(),
             Expanded(
               child: Column(
@@ -132,10 +160,12 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ]),
             ),
-          ],
+          ]),
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+      floatingActionButtonLocation: ScreenSizes.isTablet(context)
+          ? FloatingActionButtonLocation.startTop
+          : FloatingActionButtonLocation.startFloat,
       floatingActionButton: Row(
         children: [
           FloatingActionButton(

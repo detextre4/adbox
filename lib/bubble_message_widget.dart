@@ -31,8 +31,9 @@ class BubbleMessageWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final List currentElement = data[index]?["id"];
     final int? id = (currentElement.elementAtOrNull(0) as BigInt?)?.toInt();
-    final userReaction = (data[index]["reactions"] as List)
-        .singleWhereOrNull((element) => element["user"] == userID);
+    final List reactions = data[index]["reactions"];
+    final userReaction =
+        reactions.singleWhereOrNull((element) => element["user"] == userID);
     final bool haveReactions = userReaction != null;
 
     final currentReaction = TypeReaction.values
@@ -47,11 +48,11 @@ class BubbleMessageWidget extends StatelessWidget {
       {
         "type": TypeReaction.smile,
         "icon": const Icon(Icons.sentiment_very_satisfied_outlined),
-        "activeIcon": const Icon(Icons.sentiment_very_satisfied_outlined),
+        "activeIcon": const Icon(Icons.tag_faces_rounded),
       },
       {
         "type": TypeReaction.clap,
-        "icon": const Icon(Icons.soap_rounded),
+        "icon": const Icon(Icons.soap_outlined),
         "activeIcon": const Icon(Icons.soap_rounded),
       },
     ];
@@ -100,35 +101,46 @@ class BubbleMessageWidget extends StatelessWidget {
             child: Row(children: [
               if (data[index]["user"] == userID)
                 const Expanded(child: SizedBox.shrink()),
-              ...dataReactionIcons.map(
-                (element) => Container(
-                  width: 30,
-                  height: 30,
-                  margin: const EdgeInsets.only(left: 8),
-                  child: FloatingActionButton(
-                      backgroundColor: currentReaction == element["type"]
-                          ? null
-                          : Colors.white,
-                      foregroundColor: const Color.fromARGB(197, 0, 19, 26),
-                      onPressed: () async => haveReactions
-                          ? await removeReaction(id: id)
-                          : await addReaction(
-                              id: id,
-                              emoji: (element["type"] as TypeReaction).name,
-                            ),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(100)),
-                      child: Padding(
-                        padding: const EdgeInsets.all(6),
-                        child: FittedBox(
-                          fit: BoxFit.contain,
-                          child: currentReaction == element["type"]
-                              ? element["activeIcon"]
-                              : element["icon"],
-                        ),
-                      )),
-                ),
-              ),
+              ...dataReactionIcons.map((element) {
+                final currentReactions = reactions.where((e) =>
+                    e["emoji"] == (element["type"] as TypeReaction).name);
+
+                return Badge(
+                  label: currentReactions.isEmpty
+                      ? null
+                      : Text(currentReactions.length.toString()),
+                  backgroundColor:
+                      currentReactions.isEmpty ? Colors.transparent : null,
+                  child: Container(
+                    width: 30,
+                    height: 30,
+                    margin: const EdgeInsets.only(left: 8),
+                    child: FloatingActionButton(
+                        backgroundColor: currentReaction == element["type"]
+                            ? null
+                            : Colors.white,
+                        foregroundColor: const Color.fromARGB(197, 0, 19, 26),
+                        onPressed: () async => haveReactions &&
+                                currentReaction == element["type"]
+                            ? await removeReaction(id: id)
+                            : await addReaction(
+                                id: id,
+                                emoji: (element["type"] as TypeReaction).name,
+                              ),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(100)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(6),
+                          child: FittedBox(
+                            fit: BoxFit.contain,
+                            child: currentReaction == element["type"]
+                                ? element["activeIcon"]
+                                : element["icon"],
+                          ),
+                        )),
+                  ),
+                );
+              }),
               if (data[index]["user"] != userID)
                 const Expanded(child: SizedBox.shrink()),
             ]),
