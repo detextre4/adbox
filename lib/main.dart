@@ -99,6 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: ResponsiveLayout(
+        //* mobile
         tablet: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -126,6 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ]),
         ),
+        //* web
         desktop: Padding(
           padding:
               const EdgeInsets.only(top: 16, bottom: 16, left: 16, right: 40),
