@@ -2,7 +2,7 @@ import 'package:agent_dart/agent_dart.dart';
 import 'package:flutter/foundation.dart';
 
 /// motoko/rust function of the ADBoxCanister canister
-/// see ./dfx/local/counter.did
+/// see ./dfx/local/adbox_backend/adbox_backend.did
 abstract class ADBoxMethod {
   /// use staic const as method name
   static const getUserID = "getUserID";
@@ -12,7 +12,7 @@ abstract class ADBoxMethod {
   static const removePublicReaction = "removePublicReaction";
   static const sendMessage = "sendMessage";
 
-  /// you can copy/paste from .dfx/local/canisters/counter/counter.did.js
+  /// you can copy/paste from .dfx/local/canisters/adbox_backend/adbox_backend.did.js
   static final ServiceClass idl = IDL.Service({
     ADBoxMethod.getUserID: IDL.Func([], [IDL.Text], []),
     ADBoxMethod.addPublicReaction: IDL.Func([IDL.Nat, IDL.Text], [], []),
@@ -54,7 +54,7 @@ class ADBoxCanister {
   /// Save your strength, just use this template
   AgentFactory? _agentFactory;
 
-  /// CanisterCator is the actor that make all the request to Smartcontract.
+  /// CanisterActor is the actor that make all the request to Smartcontract.
   CanisterActor? get actor => _agentFactory?.actor;
 
   // A future method because we need debug mode works for local developement

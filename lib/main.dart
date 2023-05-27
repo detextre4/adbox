@@ -69,10 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
     await _getMessage();
   }
 
-  Future<void> _addReaction({
-    required int id,
-    required String emoji,
-  }) async {
+  Future<void> _addReaction({required int id, required String emoji}) async {
     await adBoxCanister.addPublicReaction(id: id, emoji: emoji);
     await _getMessage();
   }
