@@ -78,8 +78,6 @@ actor ADBox {
 
   /// ? Enviar mensaje del rapero.
   public shared(msg) func sendMessage(nickname : Text, userMessage : Text, img : Text) : async () {
-    if (img == "" and userMessage == "") throw Error.reject("debe enviar como minimo una imagen o un mensaje");
-
     // declare user // ! just for showcase
     let user : Text = if (nickname != "") nickname else getUserIDPrivate(msg);
 
@@ -114,8 +112,6 @@ actor ADBox {
 
   // ? Add public reaction to a rapper's message.
   public shared(msg) func addPublicReaction(id : Nat, emoji : Text) : async () {
-    if (emoji == "") throw Error.reject("Debe enviar un emoji");
-
     var indexOfDataMessage : ?Nat = null;
     var dataMessage : ?M.DataMessage = null;
     // Find the message that the public chose.
