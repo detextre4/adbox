@@ -27,8 +27,13 @@ Welcome to your new adbox (Anonymous disscusion box) project and to the internet
 
 6. inside `main.dart`, you should change settings with `canisterId` to your actual id.
    dart
-    // initialize ADBoxCanister, change canister id here
-    final adBoxCanister = ADBoxCanister(canisterId: "x5cqe-syaaa-aaaaa-aaaxa-cai", url: "http://localhost:8000",);
+    // initialize agent, change canister id here: (lib/adbox_canister.dart)
+    _agentFactory ??= await AgentFactory.createAgent(
+      canisterId: newCanisterId ??
+          (isMainnet
+              ? "ffy5o-bqaaa-aaaag-abphq-cai"
+              : "br5f7-7uaaa-aaaaa-qaaca-cai"),
+    );
 
 7. start
     bash

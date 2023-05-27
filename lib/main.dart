@@ -41,9 +41,15 @@ class _MyHomePageState extends State<MyHomePage> {
   String userIDCopy = "";
   bool changedUserID = false;
 
-  Future<void> initCanister({Identity? identity}) async {
+  @override
+  void initState() {
+    initAgent(isMainnet: true);
+    super.initState();
+  }
+
+  Future<void> initAgent({bool isMainnet = false, Identity? identity}) async {
     // set agent when other paramater comes in like new Identity
-    await adBoxCanister.setAgent(newIdentity: identity);
+    await adBoxCanister.setAgent(newIdentity: identity, isMainnet: isMainnet);
     final value = await adBoxCanister.getUserID();
     userID = value;
     userIDCopy = value;
@@ -82,12 +88,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _clearMessages() async {
     await adBoxCanister.clearBattleBox();
     await _getMessage();
-  }
-
-  @override
-  void initState() {
-    initCanister();
-    super.initState();
   }
 
   @override

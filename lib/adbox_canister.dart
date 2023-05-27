@@ -34,22 +34,11 @@ abstract class ADBoxMethod {
 }
 
 //* URLs:
-//* local: http://127.0.0.1:4943/?canisterId=bd3sg-teaaa-aaaaa-qaaba-cai&id=bkyz2-fmaaa-aaaaa-qaaaq-cai
+//* local: http://127.0.0.1:4943/?canisterId=bw4dl-smaaa-aaaaa-qaacq-cai&id=br5f7-7uaaa-aaaaa-qaaca-cai
 //* ic: https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=ffy5o-bqaaa-aaaag-abphq-cai
 
 /// ADBoxCanister class, with AgentFactory within
 class ADBoxCanister {
-  ADBoxCanister({
-    //? local
-    this.canisterId = 'bkyz2-fmaaa-aaaaa-qaaaq-cai',
-    this.url = 'http://127.0.0.1:4943',
-    //? ic
-    // this.canisterId = 'ffy5o-bqaaa-aaaag-abphq-cai',
-    // this.url = 'https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io',
-  });
-  final String canisterId;
-  final String url;
-
   /// AgentFactory is a factory method that creates Actor automatically.
   /// Save your strength, just use this template
   AgentFactory? _agentFactory;
@@ -58,18 +47,26 @@ class ADBoxCanister {
   CanisterActor? get actor => _agentFactory?.actor;
 
   // A future method because we need debug mode works for local developement
-  Future<void> setAgent(
-      {String? newCanisterId,
-      ServiceClass? newIdl,
-      String? newUrl,
-      Identity? newIdentity,
-      bool? debug}) async {
+  Future<void> setAgent({
+    String? newCanisterId,
+    ServiceClass? newIdl,
+    String? newUrl,
+    Identity? newIdentity,
+    bool isMainnet = false,
+  }) async {
     _agentFactory ??= await AgentFactory.createAgent(
-        canisterId: newCanisterId ?? canisterId,
-        url: newUrl ?? url,
-        idl: newIdl ?? ADBoxMethod.idl,
-        identity: newIdentity,
-        debug: debug ?? true);
+      canisterId: newCanisterId ??
+          (isMainnet
+              ? "ffy5o-bqaaa-aaaag-abphq-cai"
+              : "br5f7-7uaaa-aaaaa-qaaca-cai"),
+      url: newUrl ??
+          (isMainnet
+              ? "https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io"
+              : "http://127.0.0.1:4943"),
+      idl: newIdl ?? ADBoxMethod.idl,
+      identity: newIdentity,
+      debug: !isMainnet,
+    );
   }
 
   /// Call canister methods like this signature
