@@ -15,10 +15,6 @@
 			"bind": "127.0.0.1:4943",
 			"type": "ephemeral"
 		},
-		"mainnet": {
-			"providers": ["https://identity.ic0.app", "https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io"],
-			"type": "persistent"
-		},
 		"ic": {
 			"bind": "a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io",
 			"type": "persistent"
