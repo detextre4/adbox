@@ -43,7 +43,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    initAgent(isMainnet: true);
+    initAgent(isMainnet: false);
     super.initState();
   }
 
