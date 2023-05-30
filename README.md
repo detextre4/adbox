@@ -1,6 +1,6 @@
 # ADBox Project
 
-Welcome to your new adbox (Anonymous disscusion box) project and to the internet computer development community. By default, creating a new project adds this README and some template files to your project directory. You can edit these template files to customize your project and to include your own code to speed up the development cycle.
+Welcome to my new adbox (Anonymous disscusion box) project.
 
 ## Quick Start
 1. `dfx` installed to your local machine, making sure you can deploy canister to your local machine.
